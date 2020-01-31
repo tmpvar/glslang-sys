@@ -20,4 +20,4 @@ build = "build.rs"
 libc = "*"
 
 [build-dependencies]
-gcc = "*"
+cc = "1.0.50"
