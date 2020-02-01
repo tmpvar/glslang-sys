@@ -17,6 +17,7 @@ const SEARCH_DIRS: &'static [&'static [&'static str]] = &[
     &["glslang", "MachineIndependent"],
     &["glslang", "MachineIndependent", "preprocessor"],
     &["glslang", "Public"],
+    &["StandAlone"],
     OS_DEPENDENT,
     &["OGLCompilersDLL"],
 ];
@@ -26,7 +27,6 @@ fn main() {
     let mut config = cc::Build::new();
     config.cpp(true);
     config.file("bindings/wrapper.cpp");
-
     for file in find_sources(&src_root) {
         config.file(file);
     }
@@ -34,9 +34,10 @@ fn main() {
     for dir in resolve_search_dirs(&src_root) {
         config.include(dir);
     }
+    config.flag("-DENABLE_OPT=0");
 
     config.include("bindings");
-    config.compile("glslang.a");
+    config.compile("glslang");
 }
 
 fn find_sources<P: AsRef<Path>>(root: &P) -> Vec<PathBuf> {

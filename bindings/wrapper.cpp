@@ -1,14 +1,14 @@
 #include "wrapper.h"
 
 #include <glslang/Include/glslang_c_interface.h>
-#include <GlslangToSpv.h>
-#include <Logger.h>
-#include <SpvTools.h>
-#include <StandAlone/DirStackFileIncluder.h>
-#include <StandAlone/ResourceLimits.h>
-#include <glslang/Include/ShHandle.h>
-#include <glslang/Include/ResourceLimits.h>
-#include <glslang/MachineIndependent/Versions.h>
+// #include <GlslangToSpv.h>
+// #include <Logger.h>
+// #include <SpvTools.h>
+// #include <StandAlone/DirStackFileIncluder.h>
+// #include <StandAlone/ResourceLimits.h>
+// #include <glslang/Include/ShHandle.h>
+// #include <glslang/Include/ResourceLimits.h>
+// #include <glslang/MachineIndependent/Versions.h>
 
 
 // #include <glslang_c_shader_types.h>
