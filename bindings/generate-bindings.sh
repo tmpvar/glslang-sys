@@ -3,7 +3,7 @@
 # BASE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 #
 # IN="$BASE/wrapper.h"
-# OUT="$BASE/../src/bindings.rs"
+# OUT="$BASE/bindings.rs"
 #
 # # bindgen "$IN"
 # bindgen -o "$OUT" "$IN"

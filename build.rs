@@ -1,57 +1,47 @@
-use std::{env, fs};
 use std::path::{Path, PathBuf};
+use std::{env, fs};
 
 extern crate cc;
 
-
-// #[cfg(unix)]
-// const OS_DEPENDENT: &'static [&'static str] = &["glslang", "OSDependent", "Linux"];
-// #[cfg(windows)]
-// const OS_DEPENDENT: &'static [&'static str] = &["glslang", "OSDependent", "Windows"];
+#[cfg(unix)]
+const OS_DEPENDENT: &'static [&'static str] = &["glslang", "OSDependent", "Linux"];
+#[cfg(windows)]
+const OS_DEPENDENT: &'static [&'static str] = &["glslang", "OSDependent", "Windows"];
 
 const SEARCH_DIRS: &'static [&'static [&'static str]] = &[
-    &["binding"],
-    // &["glslang"],
-    // &["glslang", "gen"],
-    // &["glslang", "GenericCodeGen"],
-    // &["glslang", "Include"],
-    // &["glslang", "MachineIndependent"],
-    // &["glslang", "MachineIndependent", "preprocessor"],
-    // &["glslang", "Public"],
-    // // OS_DEPENDENT,
-    // &["OGLCompilersDLL"],
+    &["SPIRV"],
+    &[""],
+    &["glslang", "Include"],
+    &["glslang", "CInterface"],
+    &["glslang", "GenericCodeGen"],
+    &["glslang", "MachineIndependent"],
+    &["glslang", "MachineIndependent", "preprocessor"],
+    &["glslang", "Public"],
+    OS_DEPENDENT,
+    &["OGLCompilersDLL"],
 ];
 
 fn main() {
-    // let root = &env::var("CARGO_MANIFEST_DIR").unwrap();
-    // let src_root = Path::new(root);
+    let src_root = Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()).join("glslang");
     let mut config = cc::Build::new();
     config.cpp(true);
+    config.file("bindings/wrapper.cpp");
 
-    config.file("bindings/wrapper.c");
+    for file in find_sources(&src_root) {
+        config.file(file);
+    }
 
-
-    // for dir in resolve_search_dirs(&src_root) {
-    //     for file in find_sources(&src_root) {
-    //         config.file(file);
-    //     }
-    // }
-
-    // for dir in resolve_search_dirs(&src_root) {
-    //     config.include(dir);
-    // }
+    for dir in resolve_search_dirs(&src_root) {
+        config.include(dir);
+    }
 
     config.include("bindings");
-
     config.compile("glslang.a");
-    // println!("cargo:rustc-link-lib=static=libglslang");
-    // println!("cargo:rustc-link-search=native=");
 }
 
 fn find_sources<P: AsRef<Path>>(root: &P) -> Vec<PathBuf> {
     let mut sources = Vec::new();
     for search_dir in resolve_search_dirs(root) {
-
         for file in fs::read_dir(search_dir).unwrap().filter_map(|e| {
             let path = e.unwrap().path();
 
@@ -63,7 +53,11 @@ fn find_sources<P: AsRef<Path>>(root: &P) -> Vec<PathBuf> {
                 }
             }
 
-            if ok { Some(path) } else { None }
+            if ok {
+                Some(path)
+            } else {
+                None
+            }
         }) {
             sources.push(file)
         }
@@ -73,15 +67,18 @@ fn find_sources<P: AsRef<Path>>(root: &P) -> Vec<PathBuf> {
 }
 
 fn resolve_search_dirs<P: AsRef<Path>>(root: &P) -> Vec<PathBuf> {
-    SEARCH_DIRS.iter().map(|dir| {
-        let mut buf = root.as_ref().to_owned();
+    SEARCH_DIRS
+        .iter()
+        .map(|dir| {
+            let mut buf = root.as_ref().to_owned();
 
-        for component in *dir {
-            buf.push(component)
-        }
+            for component in *dir {
+                buf.push(component)
+            }
 
-        buf
-    }).collect()
+            buf
+        })
+        .collect()
 }
 
 fn is_file<P: AsRef<Path>>(path: &P) -> bool {
